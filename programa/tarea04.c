@@ -75,7 +75,27 @@ int process(const unsigned int Fs,
    */
 
   /* This line just copies the data from input to output. REMOVE IT! */
-  memcpy(out, in, sizeof(float)*nframes);
+  //memcpy(out, in, sizeof(float)*nframes);
+
+
+  const float a=0.6;
+  const int k=Fs*0.500;
+  static int init=1;
+  int n;
+  float edge[k];
+
+  if (init) {
+    memset(edge,0,sizeof(edge));
+    init=0;
+  }
+
+  for (n=0; n<k; n++) {
+    out[n]=a*edge[n]+(1-a)*in[n];
+  }
+  for (;n<nframes;n++) {
+    out[n]=a*out[n-k]+(1-a)*in[n];
+  }
+  memcpy(edge,&out[nframes-k],sizeof(edge));
 
   /* Debug stuff */
   /*
